@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>很享租赁计算器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 50%, #fdbb2d 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 600px;
+            padding: 35px;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, #1a2a6c, #b21f1f, #fdbb2d);
+        }
+        
+        .container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+        
+        .brand-header {
+            text-align: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .brand-name {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #1a2a6c, #b21f1f, #fdbb2d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        .brand-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+        
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, #1a2a6c, #b21f1f);
+            border-radius: 4px;
+        }
+        
+        .product-selection {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .product-option {
+            flex: 1;
+            padding: 20px 15px;
+            text-align: center;
+            border: 2px solid #e8e8e8;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background: #fafafa;
+        }
+        
+        .product-option.active {
+            border-color: #1a2a6c;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+            box-shadow: 0 5px 15px rgba(26, 42, 108, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .product-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+        
+        .input-group {
+            margin-bottom: 22px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #444;
+            font-size: 1.05rem;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #fcfcfc;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #1a2a6c;
+            box-shadow: 0 0 0 4px rgba(26, 42, 108, 0.15);
+            background: white;
+        }
+        
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(to right, #1a2a6c, #b21f1f);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        button:hover:after {
+            left: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            border-left: 5px solid #1a2a6c;
+            display: none;
+            animation: slideIn 0.5s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .result-value {
+            font-weight: 700;
+            color: #212529;
+        }
+        
+        .highlight {
+            color: #b21f1f;
+            font-size: 1.15em;
+        }
+        
+        .note {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 6px;
+            font-style: italic;
+        }
+        
+        .down-payment-group, .b-scheme-down-group {
+            display: block;
+        }
+        
+        .contact-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .contact-info {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1a2a6c;
+            margin: 12px 0;
+            letter-spacing: 1px;
+        }
+        
+        .contact-link {
+            display: flex;
+            margin-top: 15px;
+        }
+        
+        .contact-link input {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            margin: 0;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .contact-button {
+            padding: 14px 18px;
+            background: #1a2a6c;
+            color: white;
+            border: none;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            cursor: pointer;
+            width: auto;
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .buyout-notice {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #e8f4fd 0%, #d1e7ff 100%);
+            border-radius: 8px;
+            border-left: 4px solid #1a2a6c;
+            font-size: 15px;
+            color: #1a2a6c;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .buyout-notice .discount {
+            font-weight: 700;
+            color: #b21f1f;
+            font-size: 1.1em;
+        }
+        
+        .repayment-plan {
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .repayment-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .repayment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .repayment-table th {
+            background: #1a2a6c;
+            color: white;
+            padding: 12px 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .repayment-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .repayment-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .repayment-table tr:hover {
+            background-color: #e9ecef;
+        }
+        
+        .copy-button {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .copy-button:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .rate-input {
+            display: flex;
+            align-items: center;
+        }
+        
+        .rate-input select {
+            flex: 1;
+        }
+        
+        .rate-info {
+            margin-top: 5px;
+            font-size: 13px;
+            color: #495057;
+        }
+        
+        .credit-notice {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #b21f1f;
+            font-weight: 600;
+            background: #fff3f3;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border-left: 3px solid #b21f1f;
+        }
+        
+        .scheme-info {
+            margin-top: 5px;
+            font-size: 13px;
+            color: #495057;
+            font-style: italic;
+        }
+        
+        .deposit-item {
+            display: none;
+        }
+        
+        .b-scheme-down-group {
+            display: none;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* 优化响应式设计 - 统一电脑和手机端显示 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px 20px;
+                border-radius: 15px;
+                max-width: 90%;
+            }
+            
+            h2 {
+                font-size: 1.6rem;
+                margin-bottom: 25px;
+            }
+            
+            .brand-name {
+                font-size: 2rem;
+            }
+            
+            .product-selection {
+                flex-direction: row;
+                gap: 10px;
+            }
+            
+            .product-option {
+                padding: 18px 10px;
+                min-height: 100px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .product-icon {
+                font-size: 24px;
+                margin-bottom: 8px;
+            }
+            
+            .product-name {
+                font-size: 1rem;
+            }
+            
+            .input-group {
+                margin-bottom: 20px;
+            }
+            
+            input, select {
+                padding: 12px 16px;
+                font-size: 15px;
+            }
+            
+            button {
+                padding: 14px;
+                font-size: 16px;
+            }
+            
+            .result {
+                padding: 20px;
+            }
+            
+            .result-item {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            
+            .contact-section {
+                padding: 15px;
+            }
+            
+            .contact-info {
+                font-size: 1.2rem;
+            }
+            
+            .contact-link {
+                flex-direction: row;
+            }
+            
+            .contact-link input {
+                font-size: 15px;
+            }
+            
+            .contact-button {
+                padding: 12px 16px;
+                font-size: 15px;
+            }
+            
+            .repayment-table {
+                font-size: 14px;
+            }
+            
+            .repayment-table th, .repayment-table td {
+                padding: 8px 6px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+                max-width: 95%;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+            }
+            
+            .brand-name {
+                font-size: 1.8rem;
+            }
+            
+            .brand-subtitle {
+                font-size: 1rem;
+            }
+            
+            .product-selection {
+                flex-direction: row;
+                gap: 8px;
+            }
+            
+            .product-option {
+                padding: 15px 8px;
+                min-height: 90px;
+            }
+            
+            .product-icon {
+                font-size: 22px;
+            }
+            
+            .product-name {
+                font-size: 0.9rem;
+            }
+            
+            .input-group {
+                margin-bottom: 18px;
+            }
+            
+            label {
+                font-size: 1rem;
+                margin-bottom: 8px;
+            }
+            
+            input, select {
+                padding: 10px 14px;
+                font-size: 14px;
+            }
+            
+            button {
+                padding: 12px;
+                font-size: 15px;
+            }
+            
+            .result {
+                padding: 15px;
+            }
+            
+            .result-item {
+                font-size: 0.95rem;
+            }
+            
+            .contact-info {
+                font-size: 1.1rem;
+            }
+            
+            .contact-link {
+                flex-direction: row;
+            }
+            
+            .repayment-table {
+                font-size: 12px;
+            }
+            
+            .repayment-table th, .repayment-table td {
+                padding: 6px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="brand-header">
+            <div class="brand-name">很享租</div>
+            <div class="brand-subtitle">专业租赁解决方案</div>
+        </div>
+        
+        <h2>租赁计算器</h2>
+        
+        <div class="product-selection">
+            <div class="product-option active" data-product="phone">
+                <span class="product-icon">📱</span>
+                <div class="product-name">手机租赁</div>
+            </div>
+            <div class="product-option" data-product="electric-vehicle">
+                <span class="product-icon">🛵</span>
+                <div class="product-name">电动车租赁</div>
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <label for="money">租赁金额（元）</label>
+            <input type="number" id="money" placeholder="请输入租赁金额" value="3000" min="1">
+        </div>
+        
+        <div class="input-group">
+            <label for="rate">费率选择</label>
+            <div class="rate-input">
+                <select id="rate">
+                    <option value="1.11">1.11倍</option>
+                    <option value="1.21">1.21倍</option>
+                    <option value="1.26">1.26倍</option>
+                    <option value="1.31">1.31倍</option>
+                    <option value="1.36">1.36倍</option>
+                </select>
+            </div>
+            <div class="rate-info" id="rateInfo">默认费率：手机6期1.21、9期1.26、12期1.31；电动车3期1.11、6期1.21、9期1.26、12期1.31</div>
+        </div>
+        
+        <div class="input-group">
+            <label for="scheme">计费方式</label>
+            <select id="scheme">
+                <option value="A">A方案（常规方案）</option>
+                <option value="B">B方案（首付=第一期租金+押金，押金从后往前抵扣）</option>
+            </select>
+            <div class="scheme-info" id="schemeInfo">A方案：常规租赁方案</div>
+        </div>
+        
+        <div class="input-group">
+            <label for="period">租赁期数</label>
+            <select id="period">
+                <option value="6">6个月（可自定义首付租金）</option>
+                <option value="9">9个月（首付不低于租赁金额的25%）</option>
+                <option value="12">12个月（首付不低于租赁金额的25%）</option>
+                <option value="3" class="ev-only">3个月（最低首付1期）</option>
+            </select>
+        </div>
+        
+        <!-- A方案首付输入 -->
+        <div class="input-group down-payment-group" id="downPaymentGroup">
+            <label for="aDown">自定义首付租金（元）</label>
+            <input type="number" id="aDown" placeholder="请输入首付租金" value="0" min="0">
+            <div class="note" id="downPaymentNote">留空或0表示使用默认首付租金</div>
+        </div>
+        
+        <!-- B方案首付输入 -->
+        <div class="input-group b-scheme-down-group" id="bSchemeDownGroup">
+            <label for="bDown">B方案首付（元）</label>
+            <input type="number" id="bDown" placeholder="例如：2500" value="0" min="0">
+            <div class="note">首付 = 第一期租金 + 押金，押金从最后一期开始往前抵扣，直到用完为止</div>
+        </div>
+        
+        <button onclick="calc()">计算租赁方案</button>
+        
+        <!-- 新增的黑户当逾备注 -->
+        <div class="credit-notice">⚠️ 黑户/当逾客户首付40%起</div>
+        
+        <div class="result" id="res">
+            <div class="result-item">
+                <span class="result-label">产品类型：</span>
+                <span class="result-value" id="productType">手机</span>
+            </div>
+            <div class="result-item deposit-item" id="depositItem">
+                <span class="result-label">押金：</span>
+                <span class="result-value" id="depositAmount">0 元</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">首付金额：</span>
+                <span class="result-value" id="downPayment">0 元</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">每期租金：</span>
+                <span class="result-value" id="monthlyPayment">0 元</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">租赁期数：</span>
+                <span class="result-value" id="paymentPeriods">0 个月</span>
+            </div>
+        </div>
+        
+        <div class="repayment-plan" id="repaymentPlan">
+            <div class="repayment-title">还款计划表</div>
+            <table class="repayment-table" id="repaymentTable">
+                <thead>
+                    <tr>
+                        <th>期数</th>
+                        <th>还款日期</th>
+                        <th>还款金额（元）</th>
+                        <th>备注</th>
+                    </tr>
+                </thead>
+                <tbody id="repaymentBody">
+                </tbody>
+            </table>
+            <button class="copy-button" onclick="copyRepaymentPlan()">复制还款计划表</button>
+        </div>
+        
+        <div class="buyout-notice" id="buyoutNotice">
+            💡 提前买断优惠：剩余租金可享受<span class="discount">95折</span>优惠！
+        </div>
+        
+        <div class="contact-section" id="contactSection">
+            <p>办理联系微信：</p>
+            <div class="contact-info">13135519997</div>
+            <div class="contact-link">
+                <input type="text" id="contactWechat" value="13135519997" readonly>
+                <button class="contact-button" onclick="copyWechat()">复制微信号</button>
+            </div>
+            <div class="note">添加微信时请备注"租赁办理"</div>
+        </div>
+    </div>
+
+    <script>
+        let currentProduct = 'phone';
+        let currentScheme = 'A';
+        
+        document.querySelectorAll('.product-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.product-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                
+                this.classList.add('active');
+                currentProduct = this.getAttribute('data-product');
+                updatePeriodOptions();
+                updateDefaultAmount();
+                updateRate();
+            });
+        });
+        
+        // 监听计费方式变化
+        document.getElementById('scheme').addEventListener('change', function() {
+            currentScheme = this.value;
+            updateSchemeDisplay();
+        });
+        
+        // 根据计费方式更新界面显示
+        function updateSchemeDisplay() {
+            const downPaymentGroup = document.getElementById('downPaymentGroup');
+            const bSchemeDownGroup = document.getElementById('bSchemeDownGroup');
+            const schemeInfo = document.getElementById('schemeInfo');
+            
+            if (currentScheme === 'B') {
+                // B方案：隐藏A方案首付输入，显示B方案首付输入
+                downPaymentGroup.style.display = 'none';
+                bSchemeDownGroup.style.display = 'block';
+                schemeInfo.textContent = "B方案：每期租金相同，首付包含第一期租金和押金，押金从最后一期开始往前抵扣，直到用完";
+                schemeInfo.style.color = "#1a2a6c";
+                schemeInfo.style.fontWeight = "600";
+            } else {
+                // A方案：显示A方案首付输入，隐藏B方案首付输入
+                downPaymentGroup.style.display = 'block';
+                bSchemeDownGroup.style.display = 'none';
+                schemeInfo.textContent = "A方案：常规租赁方案";
+                schemeInfo.style.color = "#495057";
+                schemeInfo.style.fontWeight = "normal";
+            }
+        }
+        
+        // 根据产品和期数更新默认费率
+        function updateRate() {
+            const periodSelect = document.getElementById('period');
+            const rateSelect = document.getElementById('rate');
+            
+            let defaultRate = getDefaultRate(currentProduct, periodSelect.value);
+            
+            // 设置默认选中的费率
+            rateSelect.value = defaultRate.toFixed(2);
+            
+            updateRateInfo();
+        }
+        
+        // 获取默认费率
+        function getDefaultRate(product, period) {
+            if (product === 'phone') {
+                if (period === '6') return 1.21;
+                if (period === '9') return 1.26;
+                if (period === '12') return 1.31;
+            } else if (product === 'electric-vehicle') {
+                if (period === '3') return 1.11;
+                if (period === '6') return 1.21;
+                if (period === '9') return 1.26;
+                if (period === '12') return 1.31;
+            }
+            return 1.21; // 默认值
+        }
+        
+        // 更新费率说明
+        function updateRateInfo() {
+            const rateInfo = document.getElementById('rateInfo');
+            if (currentProduct === 'phone') {
+                rateInfo.textContent = "默认费率：6期1.21、9期1.26、12期1.31";
+            } else {
+                rateInfo.textContent = "默认费率：3期1.11、6期1.21、9期1.26、12期1.31";
+            }
+        }
+        
+        // 调整期数选项显示
+        function updatePeriodOptions() {
+            const periodSelect = document.getElementById('period');
+            const evOnlyOptions = document.querySelectorAll('.ev-only');
+            
+            if (currentProduct === 'phone') {
+                // 手机产品：隐藏电动车专用选项
+                evOnlyOptions.forEach(option => {
+                    option.style.display = 'none';
+                });
+                
+                // 如果当前选择的是电动车专用选项，切换到默认的6个月
+                if (periodSelect.value === '3') {
+                    periodSelect.value = '6';
+                }
+            } else {
+                // 电动车产品：显示电动车专用选项
+                evOnlyOptions.forEach(option => {
+                    option.style.display = 'block';
+                });
+            }
+            
+            // 更新费率
+            updateRate();
+            
+            // 更新首付说明
+            updateDownPaymentNote();
+            
+            periodSelect.dispatchEvent(new Event('change'));
+        }
+        
+        function updateDefaultAmount() {
+            const moneyInput = document.getElementById('money');
+            
+            if (currentProduct === 'phone') {
+                moneyInput.value = '3000';
+                moneyInput.placeholder = '例如：iPhone 15 Pro 约 3000 元';
+            } else if (currentProduct === 'electric-vehicle') {
+                moneyInput.value = '4500';
+                moneyInput.placeholder = '例如：小牛电动车 约 4500 元';
+            }
+        }
+        
+        // 更新首付说明
+        function updateDownPaymentNote() {
+            const periodSelect = document.getElementById('period');
+            const downPaymentNote = document.getElementById('downPaymentNote');
+            
+            if (periodSelect.value === '9' || periodSelect.value === '12') {
+                downPaymentNote.textContent = '9期和12期方案首付不低于租赁金额的25%';
+            } else {
+                downPaymentNote.textContent = '留空或0表示使用默认首付租金';
+            }
+        }
+        
+        // 期数变更时更新相关设置
+        document.getElementById('period').addEventListener('change', function() {
+            const downPaymentGroup = document.getElementById('downPaymentGroup');
+            
+            if (currentScheme === 'A') {
+                if (currentProduct === 'phone') {
+                    downPaymentGroup.style.display = 'block';
+                } else {
+                    if (this.value === '3') {
+                        downPaymentGroup.style.display = 'none';
+                    } else {
+                        downPaymentGroup.style.display = 'block';
+                    }
+                }
+            }
+            
+            // 更新费率
+            updateRate();
+            
+            // 更新首付说明
+            updateDownPaymentNote();
+        });
+        
+        window.onload = function() {
+            updateSchemeDisplay();
+            updatePeriodOptions();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            if (urlParams.has('product')) {
+                const product = urlParams.get('product');
+                if (product === 'phone' || product === 'electric-vehicle') {
+                    currentProduct = product;
+                    
+                    document.querySelectorAll('.product-option').forEach(option => {
+                        option.classList.remove('active');
+                        if (option.getAttribute('data-product') === product) {
+                            option.classList.add('active');
+                        }
+                    });
+                    
+                    updatePeriodOptions();
+                    updateDefaultAmount();
+                    updateRate();
+                }
+            }
+            
+            if (urlParams.has('money')) {
+                document.getElementById('money').value = urlParams.get('money');
+            }
+            if (urlParams.has('period')) {
+                document.getElementById('period').value = urlParams.get('period');
+            }
+            if (urlParams.has('aDown')) {
+                document.getElementById('aDown').value = urlParams.get('aDown');
+            }
+            if (urlParams.has('bDown')) {
+                document.getElementById('bDown').value = urlParams.get('bDown');
+            }
+            if (urlParams.has('rate')) {
+                document.getElementById('rate').value = urlParams.get('rate');
+            }
+            if (urlParams.has('scheme')) {
+                document.getElementById('scheme').value = urlParams.get('scheme');
+                currentScheme = urlParams.get('scheme');
+                updateSchemeDisplay();
+            }
+            
+            // 页面加载时立即计算一次，显示默认结果
+            setTimeout(function() {
+                calc();
+            }, 100);
+            
+            // 如果有URL参数，重新计算
+            if (urlParams.has('money') || urlParams.has('period') || urlParams.has('aDown') || urlParams.has('bDown') || urlParams.has('rate') || urlParams.has('product') || urlParams.has('scheme')) {
+                calc();
+            }
+        };
+        
+        function calc() {
+            let money = parseFloat(document.getElementById('money').value);
+            let rate = parseFloat(document.getElementById('rate').value);
+            let scheme = document.getElementById('scheme').value;
+            let period = document.getElementById('period').value;
+            
+            if (isNaN(money) || money <= 0) {
+                alert("请输入有效的租赁金额");
+                return;
+            }
+            
+            let totalPeriod = parseInt(period);
+            
+            // 计算总租金
+            let total = money * rate;
+            let monthPay = 0, actualDown = 0, deposit = 0, monthlyPayment = 0;
+            
+            if (scheme === 'B') {
+                // B方案：首付由用户输入，包含第一期租金和押金
+                let bDown = parseFloat(document.getElementById('bDown').value) || 0;
+                
+                if (bDown <= 0) {
+                    alert("B方案请输入有效的首付金额");
+                    return;
+                }
+                
+                // 计算每期租金（总租金除以期数）
+                monthlyPayment = total / totalPeriod;
+                
+                // 第一期租金
+                let firstMonthPayment = monthlyPayment;
+                
+                // 押金 = 首付 - 第一期租金
+                deposit = bDown - firstMonthPayment;
+                
+                if (deposit < 0) {
+                    alert("B方案首付不能小于第一期租金（" + firstMonthPayment.toFixed(2) + "元）");
+                    return;
+                }
+                
+                // 显示押金
+                document.getElementById('depositItem').style.display = 'flex';
+                document.getElementById('depositAmount').textContent = deposit.toFixed(2) + ' 元';
+                
+                // 设置显示值
+                actualDown = bDown;
+                monthPay = monthlyPayment;
+                
+            } else {
+                // A方案：常规方案
+                // 隐藏押金显示
+                document.getElementById('depositItem').style.display = 'none';
+                
+                let aDown = parseFloat(document.getElementById('aDown').value) || 0;
+                
+                // 计算每期租金（总租金除以期数）
+                monthlyPayment = total / totalPeriod;
+                
+                // 根据不同期数处理首付逻辑
+                if (period === '9' || period === '12') {
+                    // 9期和12期：首付不低于租赁金额的25%
+                    let minDownPayment = money * 0.25;
+                    
+                    if (aDown <= 0) {
+                        // 如果用户没有输入首付，使用25%作为默认首付
+                        actualDown = minDownPayment;
+                    } else {
+                        // 如果用户输入了首付，检查是否满足最低要求
+                        if (aDown < minDownPayment) {
+                            alert(`9期和12期方案首付不能低于租赁金额的25%（${minDownPayment.toFixed(2)}元）`);
+                            actualDown = minDownPayment;
+                        } else {
+                            actualDown = aDown;
+                        }
+                    }
+                    
+                    // 计算每月租金（总租金 - 首付）/ (期数 - 1)
+                    monthPay = (total - actualDown) / (totalPeriod - 1);
+                    
+                } else if (period === '3') {
+                    // 3期方案：首付不低于1期租金
+                    let minDownPayment = total / totalPeriod;
+                    
+                    if (aDown <= 0) {
+                        // 如果用户没有输入首付，使用1期租金作为默认首付
+                        actualDown = minDownPayment;
+                    } else {
+                        // 如果用户输入了首付，检查是否满足最低要求
+                        if (aDown < minDownPayment) {
+                            alert(`3期方案首付不能低于1期租金（${minDownPayment.toFixed(2)}元）`);
+                            actualDown = minDownPayment;
+                        } else {
+                            actualDown = aDown;
+                        }
+                    }
+                    
+                    // 计算每月租金（总租金 - 首付）/ (期数 - 1)
+                    monthPay = (total - actualDown) / (totalPeriod - 1);
+                    
+                } else {
+                    // 6期方案：可自定义首付
+                    if (aDown <= 0) {
+                        // 如果用户没有输入首付，使用1期租金作为默认首付
+                        actualDown = total / totalPeriod;
+                        monthPay = actualDown; // 每期租金相同
+                    } else {
+                        // 如果用户输入了首付，使用用户输入的首付
+                        actualDown = aDown;
+                        monthPay = (total - actualDown) / (totalPeriod - 1);
+                    }
+                }
+            }
+            
+            // 四舍五入保留两位小数
+            actualDown = Math.round(actualDown * 100) / 100;
+            monthPay = Math.round(monthPay * 100) / 100;
+            total = Math.round(total * 100) / 100;
+            deposit = Math.round(deposit * 100) / 100;
+            monthlyPayment = Math.round(monthlyPayment * 100) / 100;
+            
+            // 更新结果显示
+            document.getElementById('productType').textContent = currentProduct === 'phone' ? '手机' : '电动车';
+            document.getElementById('downPayment').textContent = actualDown.toFixed(2) + ' 元';
+            document.getElementById('monthlyPayment').textContent = monthPay.toFixed(2) + ' 元';
+            document.getElementById('paymentPeriods').textContent = totalPeriod + ' 个月';
+            
+            // 生成还款计划表
+            generateRepaymentPlan(total, actualDown, monthPay, totalPeriod, period, scheme, deposit);
+            
+            // 显示结果区域
+            document.getElementById('res').style.display = 'block';
+            document.getElementById('buyoutNotice').style.display = 'block';
+            document.getElementById('repaymentPlan').style.display = 'block';
+        }
+        
+        function generateRepaymentPlan(total, downPayment, monthlyPayment, totalPeriods, periodType, scheme, deposit) {
+            const repaymentBody = document.getElementById('repaymentBody');
+            repaymentBody.innerHTML = '';
+            
+            // 计算开始日期（从今天开始）
+            const startDate = new Date();
+            
+            if (scheme === 'B') {
+                // B方案：每期租金相同，押金从最后一期开始往前抵扣
+                // 第一期租金
+                let firstMonthPayment = monthlyPayment;
+                
+                // 添加首付行（第一期租金 + 押金）
+                const downRow = document.createElement('tr');
+                downRow.innerHTML = `
+                    <td>首付</td>
+                    <td>${formatDate(startDate)}</td>
+                    <td>${downPayment.toFixed(2)}</td>
+                    <td>第一期租金 ${firstMonthPayment.toFixed(2)}元 + 押金 ${deposit.toFixed(2)}元</td>
+                `;
+                repaymentBody.appendChild(downRow);
+                
+                // 计算每期实际需要支付的金额
+                // 从最后一期开始，用押金抵扣
+                let depositRemaining = deposit;
+                let paymentAmounts = new Array(totalPeriods).fill(monthlyPayment);
+                
+                // 第1期已经支付（在首付中）
+                // 从最后一期开始抵扣
+                for (let i = totalPeriods; i >= 2; i--) {
+                    if (depositRemaining <= 0) {
+                        break;
+                    }
+                    
+                    if (depositRemaining >= monthlyPayment) {
+                        // 押金足够抵扣这一期
+                        paymentAmounts[i-1] = 0;
+                        depositRemaining -= monthlyPayment;
+                    } else {
+                        // 押金部分抵扣这一期
+                        paymentAmounts[i-1] = monthlyPayment - depositRemaining;
+                        depositRemaining = 0;
+                    }
+                }
+                
+                // 生成还款计划（从第2期开始）
+                for (let i = 2; i <= totalPeriods; i++) {
+                    const row = document.createElement('tr');
+                    const paymentDate = new Date(startDate);
+                    paymentDate.setMonth(startDate.getMonth() + (i - 1));
+                    
+                    let amount = paymentAmounts[i-1];
+                    let remark = "月租金";
+                    
+                    if (amount === 0) {
+                        remark = "押金全额抵扣";
+                    } else if (amount < monthlyPayment) {
+                        let deducted = monthlyPayment - amount;
+                        remark = `押金抵扣${deducted.toFixed(2)}元，需支付${amount.toFixed(2)}元`;
+                    }
+                    
+                    if (i === totalPeriods) {
+                        remark += "（最后一期）";
+                    }
+                    
+                    row.innerHTML = `
+                        <td>第${i}期</td>
+                        <td>${formatDate(paymentDate)}</td>
+                        <td>${amount.toFixed(2)}</td>
+                        <td>${remark}</td>
+                    `;
+                    repaymentBody.appendChild(row);
+                }
+                
+            } else {
+                // A方案：原来的逻辑
+                // 添加首付行
+                if (downPayment > 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>首付</td>
+                        <td>${formatDate(startDate)}</td>
+                        <td>${downPayment.toFixed(2)}</td>
+                        <td>首期租金</td>
+                    `;
+                    repaymentBody.appendChild(row);
+                }
+                
+                // 添加每月还款行
+                for (let i = 1; i <= totalPeriods; i++) {
+                    // 跳过首期（如果已经作为首付支付）
+                    if (i === 1 && downPayment > 0) continue;
+                    
+                    const row = document.createElement('tr');
+                    const paymentDate = new Date(startDate);
+                    
+                    // 修正日期计算：第一期还款应该是次月
+                    if (downPayment > 0) {
+                        // 有首付的情况：第一期是次月，第二期是次次月，以此类推
+                        paymentDate.setMonth(startDate.getMonth() + (i - 1));
+                    } else {
+                        // 无首付的情况：第一期是次月，第二期是次次月，以此类推
+                        paymentDate.setMonth(startDate.getMonth() + i);
+                    }
+                    
+                    row.innerHTML = `
+                        <td>第${i}期</td>
+                        <td>${formatDate(paymentDate)}</td>
+                        <td>${monthlyPayment.toFixed(2)}</td>
+                        <td>${i === totalPeriods ? '最后一期' : ''}</td>
+                    `;
+                    repaymentBody.appendChild(row);
+                }
+            }
+        }
+        
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        function copyRepaymentPlan() {
+            const productType = document.getElementById('productType').textContent;
+            const downPayment = document.getElementById('downPayment').textContent;
+            const monthlyPayment = document.getElementById('monthlyPayment').textContent;
+            const paymentPeriods = document.getElementById('paymentPeriods').textContent;
+            
+            let repaymentText = `很享租 - ${productType}租赁还款计划\n`;
+            repaymentText += `每期租金：${monthlyPayment}\n`;
+            repaymentText += `首付金额：${downPayment}\n`;
+            repaymentText += `租赁期数：${paymentPeriods}\n\n`;
+            repaymentText += `还款计划：\n`;
+            
+            const rows = document.querySelectorAll('#repaymentBody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                repaymentText += `${cells[0].textContent}\t${cells[1].textContent}\t${cells[2].textContent}\t${cells[3].textContent}\n`;
+            });
+            
+            repaymentText += `\n提前买断优惠：剩余租金可享受95折优惠！`;
+            
+            // 复制到剪贴板
+            navigator.clipboard.writeText(repaymentText).then(() => {
+                const button = document.querySelector('.copy-button');
+                const originalText = button.textContent;
+                button.textContent = '已复制到剪贴板!';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('复制失败: ', err);
+                alert('复制失败，请手动选择并复制内容');
+            });
+        }
+        
+        function copyWechat() {
+            const wechatInput = document.getElementById('contactWechat');
+            wechatInput.select();
+            wechatInput.setSelectionRange(0, 99999);
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    const button = document.querySelector('.contact-button');
+                    const originalText = button.textContent;
+                    button.textContent = '已复制!';
+                    
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                    }, 2000);
+                }
+            } catch (err) {
+                console.error('复制失败: ', err);
+                alert('复制失败，请手动选择并复制微信号');
+            }
+        }
+    </script>
+</body>
+</html>
